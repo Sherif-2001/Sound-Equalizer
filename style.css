@@ -1,3 +1,30 @@
-[class^="jss"] {
-  display: none;
+/* Buttons style */
+.css-z09lfk.edgvbvh10 {
+  width: 100%;
+}
+
+/* Sidebar style */
+.css-1vq4p4l.e1fqkh3o4 {
+  display: block;
+  padding-top: 10%;
+}
+
+/* Headers in sidebar style */
+h1 {
+  position: absolute;
+}
+
+/* Horizonal line break style */
+hr {
+  margin: 0%;
+}
+
+/* Main window style */
+.block-container.css-12oz5g7.egzxvld2 {
+  padding: 5%;
+}
+
+/* Sliders' columns style */
+.css-ocqkz7.e1tzin5v4 {
+  margin: -25px;
 }
