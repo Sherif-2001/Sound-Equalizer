@@ -2,9 +2,9 @@ import streamlit as st
 import streamlit_functions as functions
 import plotly.express as px
 import streamlit_vertical_slider as svs
-
-import librosa.display
-import matplotlib.pyplot as plt
+import librosa
+import scipy.fft as fft
+import soundfile as sf
 
 # ---------------------- Elements Styling -------------------------------- #
 
@@ -40,22 +40,29 @@ for column in columns:
 
 # ------------------------------------------------------------------------ #
 st.markdown("***")
-# ---------------------- Heat map ---------------------------------------- #
+# ---------------------- Graph ------------------------------------------- #
 
-# s = [[1,2,3],[2,8,6],[8,2,8]]
-# figure = px.line(s)
-# figure.update_layout(showlegend=True, margin=dict(l=0, r=0, t=0, b=0), legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01),height = 350)
-# figure.update_xaxes(showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
-# figure.update_yaxes(showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+data, sample_rate = librosa.load('dub.wav')
+transformed = fft.rfft(data)[:len(data)//2]
+print(transformed)
+inversed = fft.irfft(transformed)
 
-# st.plotly_chart(figure, use_container_width=True)
+export = st.sidebar.button("Export")
+if export:
+    sf.write("inversed.wav",inversed,sample_rate)
 
-x, sr = librosa.load('Crash-Cymbal-3.wav', sr=None)
-X = librosa.stft(x)
-Xdb = librosa.amplitude_to_db(abs(X))
-fig = plt.figure() 
-librosa.display.specshow(Xdb, sr=sr, x_axis='time', y_axis='hz')
-plt.colorbar()
-plt.show()
 
-st.pyplot(fig)
+st.sidebar.audio("inversed.wav")
+
+fig1 = px.line(inversed)
+fig1.update_layout(showlegend=True, margin=dict(l=0, r=0, t=0, b=0), legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
+fig1.update_xaxes(showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+fig1.update_yaxes(showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+st.plotly_chart(fig1)
+
+subt = [m - n for m,n in zip(data,inversed)]
+fig = px.line(subt)
+fig.update_layout(showlegend=True, margin=dict(l=0, r=0, t=0, b=0), legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
+fig.update_xaxes(showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+fig.update_yaxes(showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+st.plotly_chart(fig)
