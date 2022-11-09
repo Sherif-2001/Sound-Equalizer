@@ -1,3 +1,4 @@
+/* Button style */
 Buttons style .css-z09lfk.edgvbvh10 {
   width: 100%;
 }
@@ -7,11 +8,6 @@ Buttons style .css-z09lfk.edgvbvh10 {
   display: block;
   padding-top: 10%;
 }
-
-/* Headers in sidebar style */
-/* h1 {
-  position: absolute;
-} */
 
 /* Horizonal line break style */
 hr {
@@ -23,10 +19,12 @@ hr {
   margin: -25px;
 }
 
+/* Footer style */
 .css-2ykyy6.egzxvld0 {
   display: none;
 }
 
+/* Main window style */
 .block-container.css-18e3th9.egzxvld2 {
   padding-top: 5%;
   padding-bottom: 0%;
