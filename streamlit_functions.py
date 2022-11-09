@@ -4,6 +4,8 @@ import plotly.express as px
 import wave
 import streamlit as st
 from scipy.io.wavfile import write
+import scipy.signal as sig
+import plotly.graph_objs as go
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
@@ -31,13 +33,13 @@ def signalTransform():
 
         modified_signal_channel = np.int16(modified_signal)
         write("Modified.wav", sample_rate * 2, modified_signal_channel)
-
-        return signal_x_axis,signal_y_axis,modified_signal
+    
+        return signal_x_axis,signal_y_axis,modified_signal,sample_rate
     else:
-        return np.arange(0,1,0.1),np.zeros(10),np.zeros(10)
+        return np.arange(0,1,0.1),np.zeros(10),np.zeros(10),1
 
 def plotSignals():
-    signal_x_axis,signal_y_axis,modified_signal = signalTransform()
+    signal_x_axis,signal_y_axis,modified_signal,sample_rate = signalTransform()
     signal_figure = px.line(x = signal_x_axis,y = signal_y_axis)
     signal_figure['data'][0]['showlegend'] = True
     signal_figure['data'][0]['name'] = 'Original'
@@ -45,4 +47,13 @@ def plotSignals():
     signal_figure.update_layout(showlegend=True, margin=dict(l=0, r=0, t=0, b=0), legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
     signal_figure.update_xaxes(title="Time",showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
     signal_figure.update_yaxes(title="Amplitude",showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
-    return signal_figure
+ 
+    freqs, time, Pxx = sig.spectrogram(signal_y_axis, sample_rate*2)
+
+    trace = [go.Heatmap(x= time[:len(time)//2], y= freqs, z= 10*np.log10(Pxx), colorscale='Jet')]
+    layout = go.Layout(yaxis = dict(title = 'Frequency'), xaxis = dict(title = 'Time'), margin= dict(l=0, r=0, t=0, b=0))
+    spec_figure = go.Figure(data=trace, layout=layout)
+    spec_figure.update_xaxes(title_font=dict(size=24, family='Arial'))
+    spec_figure.update_yaxes(title_font=dict(size=24, family='Arial'))
+
+    return signal_figure, spec_figure

@@ -1,6 +1,7 @@
 import streamlit as st
 import streamlit_functions as functions
 import streamlit_vertical_slider as svs
+import plotly.express as px
 
 # ---------------------- Websites Options -------------------------------- #
 st.set_page_config(page_title="Equalizer",layout="wide",page_icon="🎚",initial_sidebar_state="expanded")
@@ -40,14 +41,14 @@ for column in columns:
 st.markdown("***")
 # ---------------------- Plots ------------------------------------------- #
 
+signal_figure,spec_figure = functions.plotSignals()
 signal_plot_col, spectrogram_col = st.columns(2)
 
 with signal_plot_col:
-    st.plotly_chart(functions.plotSignals(),use_container_width=True)
-# with spectrogram_col:
-    # st.plotly_chart(signal_figure,use_container_width=True)
-    # f,t,Sxx = sig.spectrogram(modified_signal,sample_rate)
-    # px.density_heatmap(Sxx)
+    st.plotly_chart(signal_figure,use_container_width=True)
+
+with spectrogram_col:
+    st.plotly_chart(spec_figure,use_container_width=True)
 
 # ---------------------- Modified Signal --------------------------------- #
 st.sidebar.markdown("# Modified Signal")
