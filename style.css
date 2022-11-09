@@ -9,17 +9,16 @@ Buttons style .css-z09lfk.edgvbvh10 {
 }
 
 /* Headers in sidebar style */
-h1 {
+/* h1 {
   position: absolute;
-}
+} */
 
 /* Horizonal line break style */
 hr {
-  margin: 0%;
+  margin-top: 0%;
 }
 
 /* Sliders' columns style */
 .css-ocqkz7.e1tzin5v4 {
   margin: -25px;
 }
-
