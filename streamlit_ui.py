@@ -1,10 +1,12 @@
 import streamlit as st
 import streamlit_functions as functions
-import streamlit_vertical_slider as svs
-import plotly.express as px
 
 # ---------------------- Websites Options -------------------------------- #
 st.set_page_config(page_title="Equalizer",layout="wide",page_icon="🎚",initial_sidebar_state="expanded")
+
+# ---------------------- Variables States -------------------------------- #
+if "current_page" not in st.session_state:
+    st.session_state["current_page"] = "Default"
 
 # ---------------------- Elements Styling -------------------------------- #
 with open('style.css') as f:
@@ -15,34 +17,23 @@ with open('style.css') as f:
 uploaded_file = st.sidebar.file_uploader("uploader",key="uploaded_file",label_visibility="hidden",type="wav")
 
 # ---------------------- Original Audio ---------------------------------- #
-
 st.sidebar.markdown("# Original Signal")
 st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded_file"] else None,"wav")
 
-# ---------------------- Sliders ----------------------------------------- #
+if st.session_state["current_page"] == "Default":
+    functions.defaultPage()
+elif st.session_state["current_page"] == "Music":
+    functions.musicPage()
+elif st.session_state["current_page"] == "Vowels":
+    functions.vowelsPage()
+elif st.session_state["current_page"] == "lastone":
+    functions.lastPage()
 
-columns = st.columns(10)
-for column in columns:
-    if f"slider{columns.index(column)+1}" not in st.session_state:
-        st.session_state[f"slider{columns.index(column)+1}"] = 1
-
-for column in columns:
-    with column:
-        svs.vertical_slider(key = f"slider{columns.index(column)+1}", 
-                            min_value=0,
-                            max_value=5,
-                            step=1,
-                            default_value=1,
-                            thumb_color="#2481ce",
-                            slider_color="#061724",
-                            track_color="lightgray")
-
-# -----------------------line break -------------------------------------- #
+# ---------------------- Line Break --------------------------------- #
 st.markdown("***")
 # ---------------------- Plots ------------------------------------------- #
-
 signal_figure,spec_figure = functions.plotSignals()
-signal_plot_col, spectrogram_col = st.columns(2)
+signal_plot_col, spectrogram_col = st.columns(2,gap="large")
 
 with signal_plot_col:
     st.plotly_chart(signal_figure,use_container_width=True)
@@ -53,3 +44,8 @@ with spectrogram_col:
 # ---------------------- Modified Signal --------------------------------- #
 st.sidebar.markdown("# Modified Signal")
 st.sidebar.audio("Modified.wav" if st.session_state["uploaded_file"] else None,"wav")
+
+# ---------------------- Pages ------------------------------------------- #
+
+st.sidebar.markdown("# Pages")
+current_page = st.sidebar.radio("pages",["Default","Music","Vowels","lastone"],key="current_page",label_visibility="collapsed")
