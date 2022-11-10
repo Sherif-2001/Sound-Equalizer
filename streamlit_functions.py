@@ -8,12 +8,12 @@ import scipy.signal as sig
 import plotly.graph_objs as go
 import streamlit_vertical_slider as svs
 from PIL import Image
-from st_click_detector import click_detector
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
         audio   =     wave.open(st.session_state["uploaded_file"], 'rb')
         sample_rate = audio.getframerate()
+        n_channels = audio.getnchannels()
         n_samples   = audio.getnframes()
         duration    = n_samples / sample_rate
         signal_wave = audio.readframes(-1)   
@@ -29,10 +29,10 @@ def signalTransform():
         if st.session_state["current_page"] == "Music":
             if not st.session_state["drum_check"]:
                 yf[int(duration*0):int(duration* 1000)] *= 0
-            if not st.session_state["violin_check"]:
-                yf[int(duration*5000):int(duration* 10000)] *= 0
             if not st.session_state["piano_check"]:
                 yf[int(duration*1000):int(duration* 5000)] *= 0
+            if not st.session_state["violin_check"]:
+                yf[int(duration*5000):int(duration* 10000)] *= 0
 
         if st.session_state["current_page"] == "Default":
             for i in range(10):
@@ -41,12 +41,26 @@ def signalTransform():
                 else:
                     yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
 
+        if st.session_state["current_page"] == "Vowels":
+            if not st.session_state["letterA"]:
+                yf[int(duration*0):int(duration* 1000)] *= 0
+            if not st.session_state["letterB"]:
+                yf[int(duration*1000):int(duration* 5000)] *= 0
+            if not st.session_state["letterT"]:
+                yf[int(duration*5000):int(duration* 10000)] *= 0
+            if not st.session_state["letterK"]:
+                yf[int(duration*10000):int(duration* 20000)] *= 0
+
         modified_signal = fft.irfft(yf)
 
         modified_signal_channel = np.int16(modified_signal)
-        write("Modified.wav", sample_rate * 2, modified_signal_channel)
-    
-        return signal_x_axis,signal_y_axis,modified_signal,sample_rate
+        if n_channels == 1:
+            write("Modified.wav", sample_rate, modified_signal_channel)
+            return  signal_x_axis[:len(signal_x_axis)//2],signal_y_axis,modified_signal,sample_rate
+        else:
+            write("Modified.wav", sample_rate*2, modified_signal_channel)
+            return  signal_x_axis,signal_y_axis,modified_signal,sample_rate
+
     else:
         return np.arange(0,1,0.1),np.zeros(10),np.zeros(10),1
 
@@ -92,11 +106,9 @@ def defaultPage():
 def musicPage():
 
     if "drum_check" not in st.session_state:
-        st.session_state.update({
-            "drum_check":True,
-            "violin_check":True,
-            "piano_check":True
-        })
+        st.session_state["drum_check"] = True
+        st.session_state["violin_check"] = True
+        st.session_state["piano_check"] = True
 
     img1,img2,img3 = st.columns(3)
     with img1:
@@ -114,7 +126,11 @@ def musicPage():
         st.checkbox("Piano Sound",value=True,key="piano_check")
 
 def vowelsPage():
-    st.text("vowels")
+    letters = ["A","B","T","K"]
+    letters_columns = st.columns(4)
+    for column in letters_columns:
+        with column:
+            st.checkbox(label=f"letter {letters[letters_columns.index(column)]}",value=True,key=f"letter{letters[letters_columns.index(column)]}")
 
 def lastPage():
     st.text("last")

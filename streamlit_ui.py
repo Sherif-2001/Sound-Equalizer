@@ -17,6 +17,7 @@ with open('style.css') as f:
 uploaded_file = st.sidebar.file_uploader("uploader",key="uploaded_file",label_visibility="hidden",type="wav")
 
 # ---------------------- Original Audio ---------------------------------- #
+
 st.sidebar.markdown("# Original Signal")
 st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded_file"] else None,"wav")
 
@@ -29,7 +30,7 @@ elif st.session_state["current_page"] == "Vowels":
 elif st.session_state["current_page"] == "lastone":
     functions.lastPage()
 
-# ---------------------- Line Break --------------------------------- #
+# ---------------------- Line Break -------------------------------------- #
 st.markdown("***")
 # ---------------------- Plots ------------------------------------------- #
 signal_figure,spec_figure = functions.plotSignals()
