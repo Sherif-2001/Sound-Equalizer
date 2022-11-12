@@ -8,6 +8,7 @@ import scipy.signal as sig
 import plotly.graph_objs as go
 import streamlit_vertical_slider as svs
 from PIL import Image
+import time
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
@@ -52,11 +53,12 @@ def signalTransform():
                 yf[int(duration*10000):int(duration* 20000)] *= 0
 
         modified_signal = fft.irfft(yf)
-
         modified_signal_channel = np.int16(modified_signal)
+
         if n_channels == 1:
             write("Modified.wav", sample_rate, modified_signal_channel)
             return  signal_x_axis[:len(signal_x_axis)//2],signal_y_axis,modified_signal,sample_rate
+        
         else:
             write("Modified.wav", sample_rate*2, modified_signal_channel)
             return  signal_x_axis,signal_y_axis,modified_signal,sample_rate
@@ -70,22 +72,25 @@ def plotSignals():
     signal_figure['data'][0]['showlegend'] = True
     signal_figure['data'][0]['name'] = 'Modified'
     signal_figure.add_scatter(name="Original", x=signal_x_axis,y=signal_y_axis, line_color="#FF4B4B",visible="legendonly")
-    signal_figure.update_layout(showlegend=True, margin=dict(l=0, r=0, t=0, b=0), legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
-    signal_figure.update_xaxes(title="Time",showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
-    signal_figure.update_yaxes(title="Amplitude",showline=True, linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+    signal_figure.update_layout(margin=dict(l=0, r=0, t=0, b=0), legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
+    signal_figure.update_xaxes(title="Time", linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
+    signal_figure.update_yaxes(title="Amplitude", linewidth=2, linecolor='black',gridcolor='#5E5E5E', title_font=dict(size=24, family='Arial'))
  
-    freqs, time, Pxx = sig.spectrogram(signal_y_axis, sample_rate*2)
+    original_freqs, original_time, original_Pxx = sig.spectrogram(signal_y_axis, sample_rate*2)
+    modified_freqs, modified_time, modified_Pxx = sig.spectrogram(modified_signal, sample_rate*2)
 
-    trace = [go.Heatmap(x= time, y= freqs, z= 10*np.log10(Pxx), colorscale='Jet')]
+    traces = [go.Heatmap(x= modified_time, y= modified_freqs, z= 10*np.log10(modified_Pxx),name="Modified"),go.Heatmap(x= original_time, y= original_freqs, z= 10*np.log10(original_Pxx), visible="legendonly",name="Original")]
     layout = go.Layout(yaxis = dict(title = 'Frequency'), xaxis = dict(title = 'Time'), margin= dict(l=0, r=0, t=0, b=0))
-    spec_figure = go.Figure(data=trace, layout=layout)
+    spec_figure = go.Figure(data=traces, layout=layout)
+    spec_figure.update_traces(showlegend=True,colorscale='Jet')
+    spec_figure.update_layout(showlegend=True,legend=dict(yanchor="top", y=0.99, xanchor="left", x=0.01))
     spec_figure.update_xaxes(title_font=dict(size=24, family='Arial'))
     spec_figure.update_yaxes(title_font=dict(size=24, family='Arial'))
 
     return signal_figure, spec_figure
 
-
 def defaultPage():
+    time.sleep(2)
     # Sliders
     columns = st.columns(10)
     for column in columns:
@@ -104,7 +109,7 @@ def defaultPage():
                                 track_color="lightgray")
 
 def musicPage():
-
+    time.sleep(5)
     if "drum_check" not in st.session_state:
         st.session_state["drum_check"] = True
         st.session_state["violin_check"] = True
@@ -114,18 +119,18 @@ def musicPage():
     with img1:
         drum_image = Image.open('icons/drum.png')
         st.image(drum_image,width=200)
-        st.checkbox("Drum Sound",value=True,key="drum_check")
+        st.checkbox("Drum Sound",key="drum_check")
     with img2:
         violin_image = Image.open('icons/violin.png')
         st.image(violin_image,width=200)
-        st.checkbox("Violin Sound",value=True,key="violin_check")
-
+        st.checkbox("Violin Sound",key="violin_check")
     with img3:
         piano_image = Image.open('icons/piano.png')
         st.image(piano_image,width=200)
-        st.checkbox("Piano Sound",value=True,key="piano_check")
+        st.checkbox("Piano Sound",key="piano_check")
 
 def vowelsPage():
+    time.sleep(3)
     letters = ["A","B","T","K"]
     letters_columns = st.columns(4)
     for column in letters_columns:

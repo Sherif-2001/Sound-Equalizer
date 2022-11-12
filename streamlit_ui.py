@@ -35,7 +35,6 @@ st.markdown("***")
 # ---------------------- Plots ------------------------------------------- #
 signal_figure,spec_figure = functions.plotSignals()
 signal_plot_col, spectrogram_col = st.columns(2,gap="large")
-
 with signal_plot_col:
     st.plotly_chart(signal_figure,use_container_width=True)
 
