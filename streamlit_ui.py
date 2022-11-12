@@ -14,7 +14,9 @@ with open('style.css') as f:
 
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "Default"
-
+if "gender" not in st.session_state:
+    st.session_state["gender"] = "Female"
+    
 # ---------------------- Sidebar Elements --------------------------------- #
 
 # Uploading Files
@@ -55,3 +57,5 @@ with signal_plot_col:
 
 with spectrogram_col:
     st.plotly_chart(spec_figure,use_container_width=True)
+
+st.session_state

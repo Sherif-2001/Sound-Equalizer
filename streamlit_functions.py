@@ -8,6 +8,7 @@ import scipy.signal as sig
 import plotly.graph_objs as go
 import streamlit_vertical_slider as svs
 from PIL import Image
+import librosa
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
@@ -24,10 +25,13 @@ def signalTransform():
         yf = fft.rfft(signal_y_axis)
         xf = fft.rfftfreq(len(yf),1/sample_rate)
 
-        rangesMode(duration,yf,xf)
+        freqsRangesMode(duration,yf,xf)
 
         modified_signal = fft.irfft(yf)
-        modified_signal_channel = np.int16(modified_signal)
+        
+        male_voice = librosa.effects.pitch_shift(modified_signal, sample_rate, n_steps= -4)
+            
+        modified_signal_channel = np.int16(male_voice if st.session_state["gender"] == "Male" else modified_signal)
 
         if n_channels == 1:
             write("Modified.wav", sample_rate, modified_signal_channel)
@@ -63,7 +67,7 @@ def plotSignals():
 
     return signal_figure, spec_figure
 
-def rangesMode(duration,yf,xf):
+def freqsRangesMode(duration,yf,xf):
     ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
 
     if st.session_state["current_page"] == "Music":
@@ -90,12 +94,6 @@ def rangesMode(duration,yf,xf):
             yf[int(duration*5000):int(duration* 10000)] *= 0
         if not st.session_state["letterK"]:
             yf[int(duration*10000):int(duration* 20000)] *= 0
-
-    if st.session_state["current_page"] == "VoiceChanger":
-        if st.session_state["gender"] == "Male":
-            print("male")
-        elif st.session_state["gender"] == "Female":
-            print("Female")
 
 def defaultPage():
     columns = st.columns(10)
@@ -139,16 +137,16 @@ def vowelsPage():
             st.checkbox(label=f"letter {letters[i]}",value=True,key=f"letter{letters[i]}")
 
 def voiceChangerPage():
-    male_col,selectbox_col, female_col = st.columns((1,2,1))
-    with male_col:
-        male_image = Image.open('icons/male.png')
-        st.image(male_image,width=200)
-    
-    with selectbox_col:
-        for _ in range(4):
-            st.markdown("")
-        st.select_slider("Change Voice to:",options=["Male","Female"],key="gender",value="Male",label_visibility="collapsed")
-
+    female_col,selectbox_col,male_col = st.columns((1,2,1))
     with female_col:
         female_image = Image.open('icons/female.png')
         st.image(female_image,width=200)
+   
+    with selectbox_col:
+        for _ in range(4):
+            st.markdown("")
+        st.select_slider("Change Voice to:",options=["Female","Male"],key="gender",label_visibility="collapsed")
+
+    with male_col:
+        male_image = Image.open('icons/male.png')
+        st.image(male_image,width=200)
