@@ -145,7 +145,7 @@ def voiceChangerPage():
         st.image(male_image,width=200)
     
     with selectbox_col:
-        for i in range(4):
+        for _ in range(4):
             st.markdown("")
         st.select_slider("Change Voice to:",options=["Male","Female"],key="gender",value="Male",label_visibility="collapsed")
 

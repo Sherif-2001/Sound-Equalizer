@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit_functions as functions
 
-# ---------------------- Websites Options -------------------------------- #
+# ---------------------- Website Settings -------------------------------- #
 
 st.set_page_config(page_title="Equalizer",layout="wide",page_icon="🎚",initial_sidebar_state="expanded")
 
