@@ -8,7 +8,6 @@ import scipy.signal as sig
 import plotly.graph_objs as go
 import streamlit_vertical_slider as svs
 from PIL import Image
-import time
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
@@ -25,32 +24,7 @@ def signalTransform():
         yf = fft.rfft(signal_y_axis)
         xf = fft.rfftfreq(len(yf),1/sample_rate)
 
-        ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
-
-        if st.session_state["current_page"] == "Music":
-            if not st.session_state["drum_check"]:
-                yf[int(duration*0):int(duration* 1000)] *= 0
-            if not st.session_state["piano_check"]:
-                yf[int(duration*1000):int(duration* 5000)] *= 0
-            if not st.session_state["violin_check"]:
-                yf[int(duration*5000):int(duration* 10000)] *= 0
-
-        if st.session_state["current_page"] == "Default":
-            for i in range(10):
-                if i < 9:
-                    yf[int(duration*ranges[i]):int(duration* ranges[i+1])] *= st.session_state.get(f"slider{i+1}")
-                else:
-                    yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
-
-        if st.session_state["current_page"] == "Vowels":
-            if not st.session_state["letterA"]:
-                yf[int(duration*0):int(duration* 1000)] *= 0
-            if not st.session_state["letterB"]:
-                yf[int(duration*1000):int(duration* 5000)] *= 0
-            if not st.session_state["letterT"]:
-                yf[int(duration*5000):int(duration* 10000)] *= 0
-            if not st.session_state["letterK"]:
-                yf[int(duration*10000):int(duration* 20000)] *= 0
+        rangesMode(duration,yf,xf)
 
         modified_signal = fft.irfft(yf)
         modified_signal_channel = np.int16(modified_signal)
@@ -89,13 +63,46 @@ def plotSignals():
 
     return signal_figure, spec_figure
 
+def rangesMode(duration,yf,xf):
+    ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
+
+    if st.session_state["current_page"] == "Music":
+        if not st.session_state["drum_check"]:
+            yf[int(duration*0):int(duration* 1000)] *= 0
+        if not st.session_state["piano_check"]:
+            yf[int(duration*1000):int(duration* 5000)] *= 0
+        if not st.session_state["violin_check"]:
+            yf[int(duration*5000):int(duration* 10000)] *= 0
+
+    if st.session_state["current_page"] == "Default":
+        for i in range(10):
+            if i < 9:
+                yf[int(duration*ranges[i]):int(duration* ranges[i+1])] *= st.session_state.get(f"slider{i+1}")
+            else:
+                yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
+
+    if st.session_state["current_page"] == "Vowels":
+        if not st.session_state["letterA"]:
+            yf[int(duration*0):int(duration* 1000)] *= 0
+        if not st.session_state["letterB"]:
+            yf[int(duration*1000):int(duration* 5000)] *= 0
+        if not st.session_state["letterT"]:
+            yf[int(duration*5000):int(duration* 10000)] *= 0
+        if not st.session_state["letterK"]:
+            yf[int(duration*10000):int(duration* 20000)] *= 0
+
+    if st.session_state["current_page"] == "VoiceChanger":
+        if st.session_state["gender"] == "Male":
+            print("male")
+        elif st.session_state["gender"] == "Female":
+            print("Female")
+
 def defaultPage():
-    time.sleep(2)
-    # Sliders
     columns = st.columns(10)
-    for column in columns:
-        if f"slider{columns.index(column)+1}" not in st.session_state:
-            st.session_state[f"slider{columns.index(column)+1}"] = 1
+    
+    for index in range(len(columns)):
+        if f"slider{index+1}" not in st.session_state:
+            st.session_state[f"slider{index+1}"] = 1
 
     for column in columns:
         with column:
@@ -109,33 +116,39 @@ def defaultPage():
                                 track_color="lightgray")
 
 def musicPage():
-    time.sleep(5)
-    if "drum_check" not in st.session_state:
-        st.session_state["drum_check"] = True
-        st.session_state["violin_check"] = True
-        st.session_state["piano_check"] = True
-
-    img1,img2,img3 = st.columns(3)
-    with img1:
+    instrument1_col,instrument2_col,instrument3_col = st.columns((2,2,1))
+    with instrument1_col:
         drum_image = Image.open('icons/drum.png')
         st.image(drum_image,width=200)
-        st.checkbox("Drum Sound",key="drum_check")
-    with img2:
+        st.checkbox("Drum Sound",value=True,key="drum_check")
+    with instrument2_col:
         violin_image = Image.open('icons/violin.png')
         st.image(violin_image,width=200)
-        st.checkbox("Violin Sound",key="violin_check")
-    with img3:
+        st.checkbox("Violin Sound",value=True,key="violin_check")
+    with instrument3_col:
         piano_image = Image.open('icons/piano.png')
         st.image(piano_image,width=200)
-        st.checkbox("Piano Sound",key="piano_check")
+        st.checkbox("Piano Sound",value=True,key="piano_check")
 
 def vowelsPage():
-    time.sleep(3)
     letters = ["A","B","T","K"]
-    letters_columns = st.columns(4)
+    letters_columns = st.columns((2,2,2,1))
     for column in letters_columns:
+        i = letters_columns.index(column)
         with column:
-            st.checkbox(label=f"letter {letters[letters_columns.index(column)]}",value=True,key=f"letter{letters[letters_columns.index(column)]}")
+            st.checkbox(label=f"letter {letters[i]}",value=True,key=f"letter{letters[i]}")
 
-def lastPage():
-    st.text("last")
+def voiceChangerPage():
+    male_col,selectbox_col, female_col = st.columns((1,2,1))
+    with male_col:
+        male_image = Image.open('icons/male.png')
+        st.image(male_image,width=200)
+    
+    with selectbox_col:
+        for i in range(4):
+            st.markdown("")
+        st.select_slider("Change Voice to:",options=["Male","Female"],key="gender",value="Male",label_visibility="collapsed")
+
+    with female_col:
+        female_image = Image.open('icons/female.png')
+        st.image(female_image,width=200)
