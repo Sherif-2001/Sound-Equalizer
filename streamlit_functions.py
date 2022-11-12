@@ -29,9 +29,9 @@ def signalTransform():
 
         modified_signal = fft.irfft(yf)
         
-        male_voice = librosa.effects.pitch_shift(modified_signal, sample_rate, n_steps= -4)
-            
-        modified_signal_channel = np.int16(male_voice if st.session_state["gender"] == "Male" else modified_signal)
+        male_modified_signal = librosa.effects.pitch_shift(modified_signal, sample_rate, n_steps= -5)
+    
+        modified_signal_channel = np.int16(male_modified_signal if (st.session_state["gender"] == "Male" and st.session_state["current_page"] == "VoiceChanger") else modified_signal)
 
         if n_channels == 1:
             write("Modified.wav", sample_rate, modified_signal_channel)
