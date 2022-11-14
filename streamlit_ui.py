@@ -16,24 +16,10 @@ if "current_page" not in st.session_state:
     st.session_state["current_page"] = "Default"
 if "gender" not in st.session_state:
     st.session_state["gender"] = "Female"
-    
 
-# ---------------------- Sidebar Elements --------------------------------- #
+# ---------------------- Uploading Files --------------------------------- #
 
-# Uploading Files
 uploaded_file = st.sidebar.file_uploader("uploader",key="uploaded_file",label_visibility="hidden",type="wav")
-
-# Original Audio
-st.sidebar.markdown("# Original Signal")
-st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded_file"] else None,"wav")
-
-# Modified Audio
-st.sidebar.markdown("# Modified Signal")
-st.sidebar.audio("Modified.wav" if st.session_state["uploaded_file"] else None,"wav")
-
-# Page Selection
-st.sidebar.markdown("# Pages")
-current_page = st.sidebar.radio("pages",["Default","Music","Vowels","VoiceChanger"],key="current_page",label_visibility="collapsed")
 
 # ---------------------- Main Window Elements ---------------------------- #
 
@@ -46,6 +32,8 @@ elif st.session_state["current_page"] == "Vowels":
     functions.vowelsPage()
 elif st.session_state["current_page"] == "VoiceChanger":
     functions.voiceChangerPage()
+elif st.session_state["current_page"] == "Medical":
+    functions.medicalPage()
 
 # Line Break
 st.markdown("***")
@@ -58,3 +46,17 @@ with signal_plot_col:
 
 with spectrogram_col:
     st.plotly_chart(spec_figure,use_container_width=True)
+
+# ---------------------- Sidebar Elements --------------------------------- #
+
+# Original Audio
+st.sidebar.markdown("# Original Signal")
+st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded_file"] else None,"wav")
+
+# Modified Audio
+st.sidebar.markdown("# Modified Signal")
+st.sidebar.audio("Modified.wav" if st.session_state["uploaded_file"] else None,"wav")
+
+# Page Selection
+st.sidebar.markdown("# Pages")
+current_page = st.sidebar.radio("pages",["Default","Music","Vowels","VoiceChanger","Medical"],key="current_page",label_visibility="collapsed")

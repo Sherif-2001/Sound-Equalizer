@@ -70,6 +70,13 @@ def plotSignals():
 def freqsRangesMode(duration,yf,xf):
     ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
 
+    if st.session_state["current_page"] == "Default":
+        for i in range(10):
+            if i < 9:
+                yf[int(duration*ranges[i]):int(duration* ranges[i+1])] *= st.session_state.get(f"slider{i+1}")
+            else:
+                yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
+
     if st.session_state["current_page"] == "Music":
         if not st.session_state["drum_check"]:
             yf[int(duration*0):int(duration* 1000)] *= 0
@@ -77,13 +84,6 @@ def freqsRangesMode(duration,yf,xf):
             yf[int(duration*1000):int(duration* 5000)] *= 0
         if not st.session_state["violin_check"]:
             yf[int(duration*5000):int(duration* 10000)] *= 0
-
-    if st.session_state["current_page"] == "Default":
-        for i in range(10):
-            if i < 9:
-                yf[int(duration*ranges[i]):int(duration* ranges[i+1])] *= st.session_state.get(f"slider{i+1}")
-            else:
-                yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
 
     if st.session_state["current_page"] == "Vowels":
         if not st.session_state["letterA"]:
@@ -95,9 +95,16 @@ def freqsRangesMode(duration,yf,xf):
         if not st.session_state["letterK"]:
             yf[int(duration*10000):int(duration* 20000)] *= 0
 
+    if st.session_state["current_page"] == "Medical":
+        if st.session_state["Arrhythmia1"] == "Normal":
+            yf[int(duration*60):int(duration*90)] *=0
+        if st.session_state["Arrhythmia2"] == "Normal":
+            yf[int(duration*90):int(duration*250)] *=0
+        if st.session_state["Arrhythmia3"] == "Normal":
+            yf[int(duration*250):int(duration*300)] *=0
+
 def defaultPage():
     columns = st.columns(10)
-    
     for index in range(len(columns)):
         if f"slider{index+1}" not in st.session_state:
             st.session_state[f"slider{index+1}"] = 1
@@ -128,6 +135,7 @@ def musicPage():
         st.image(piano_image,width=200)
         st.checkbox("Piano Sound",value=True,key="piano_check")
 
+# A , S , J , B , L #
 def vowelsPage():
     letters = ["A","B","T","K"]
     letters_columns = st.columns((2,2,2,1))
@@ -150,3 +158,10 @@ def voiceChangerPage():
     with male_col:
         male_image = Image.open('icons/male.png')
         st.image(male_image,width=200)
+
+def medicalPage():
+    columns = st.columns((2,2,1))
+    for column in columns:
+        i = columns.index(column)+1
+        with column:
+            st.radio(f"Arrhythmia{i}",options=["Arrhythmia","Normal"],key=f"Arrhythmia{i}")
