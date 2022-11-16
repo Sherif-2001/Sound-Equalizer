@@ -51,7 +51,7 @@ with spectrogram_col:
 
 # Original Audio
 st.sidebar.markdown("# Original Signal")
-st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded_file"] else None,"wav")
+a = st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded_file"] else None,"wav")
 
 # Modified Audio
 st.sidebar.markdown("# Modified Signal")
@@ -60,3 +60,6 @@ st.sidebar.audio("Modified.wav" if st.session_state["uploaded_file"] else None,"
 # Page Selection
 st.sidebar.markdown("# Pages")
 current_page = st.sidebar.radio("pages",["Default","Music","Vowels","VoiceChanger","Medical"],key="current_page",label_visibility="collapsed")
+
+# if st.session_state["uploaded_file"]:
+#     functions.otherplot()
