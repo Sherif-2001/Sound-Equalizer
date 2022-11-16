@@ -1,4 +1,3 @@
-import time
 import numpy as np
 import pandas as pd
 import scipy.fft as fft
@@ -27,7 +26,7 @@ def signalTransform():
         yf = fft.rfft(signal_y_axis)    
         xf = fft.rfftfreq(n_samples,1/sample_rate)
 
-        freqsRangesMode(duration,yf,xf)
+        equalizerModes(duration,yf,xf)
 
         modified_signal = fft.irfft(yf)
         
@@ -36,12 +35,10 @@ def signalTransform():
         modified_signal_channel = np.int16(male_modified_signal if (st.session_state["gender"] == "Male" and st.session_state["current_page"] == "VoiceChanger") else modified_signal)
 
         if n_channels == 1:
-            print("1 channel")
             write("Modified.wav", sample_rate, modified_signal_channel)
             return  signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration
         
         else:
-            print("2 channels")
             write("Modified.wav", sample_rate*2, modified_signal_channel)
             return  signal_x_axis,signal_y_axis[:len(signal_x_axis)],modified_signal[:len(signal_x_axis)],sample_rate,duration
 
@@ -71,10 +68,10 @@ def plotSignals():
 
     return signal_figure, spec_figure
 
-def freqsRangesMode(duration,yf,xf):
-    ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
+def equalizerModes(duration,yf,xf):
 
     if st.session_state["current_page"] == "Default":
+        ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
         for i in range(10):
             if i < 9:
                 yf[int(duration*ranges[i]):int(duration* ranges[i+1])] *= st.session_state.get(f"slider{i+1}")
@@ -82,30 +79,20 @@ def freqsRangesMode(duration,yf,xf):
                 yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
 
     if st.session_state["current_page"] == "Music":
-        if not st.session_state["drum_check"]:
-            yf[int(duration*0):int(duration* 1000)] *= 0
-        if not st.session_state["piano_check"]:
-            yf[int(duration*1000):int(duration* 5000)] *= 0
-        if not st.session_state["violin_check"]:
-            yf[int(duration*5000):int(duration* 10000)] *= 0
+        yf[int(duration*0):int(duration* 1000)] *= st.session_state["drum_value"]
+        yf[int(duration*1000):int(duration* 5000)] *= st.session_state["piano_value"]
+        yf[int(duration*5000):int(duration* 10000)] *= st.session_state["violin_value"]
 
     if st.session_state["current_page"] == "Vowels":
-        if not st.session_state["letterA"]:
-            yf[int(duration*0):int(duration* 1000)] *= 0
-        if not st.session_state["letterB"]:
-            yf[int(duration*1000):int(duration* 5000)] *= 0
-        if not st.session_state["letterT"]:
-            yf[int(duration*5000):int(duration* 10000)] *= 0
-        if not st.session_state["letterK"]:
-            yf[int(duration*10000):int(duration* 20000)] *= 0
+        yf[int(duration*0):int(duration* 1000)] *= st.session_state["letterA_value"]
+        yf[int(duration*1000):int(duration* 5000)] *= st.session_state["letterB_value"]
+        yf[int(duration*5000):int(duration* 10000)] *= st.session_state["letterT_value"]
+        yf[int(duration*10000):int(duration* 20000)] *= st.session_state["letterK_value"]
 
     if st.session_state["current_page"] == "Medical":
-        if st.session_state["Arrhythmia1"] == "Normal":
-            yf[int(duration*60):int(duration*90)] *=0
-        if st.session_state["Arrhythmia2"] == "Normal":
-            yf[int(duration*90):int(duration*250)] *=0
-        if st.session_state["Arrhythmia3"] == "Normal":
-            yf[int(duration*250):int(duration*300)] *=0
+        yf[int(duration*60):int(duration*90)] *= st.session_state["Arrhythmia1"]
+        yf[int(duration*90):int(duration*250)] *=st.session_state["Arrhythmia2"]
+        yf[int(duration*250):int(duration*300)] *= st.session_state["Arrhythmia3"]
 
 def defaultPage():
     columns = st.columns(10)
@@ -125,28 +112,27 @@ def defaultPage():
                                 track_color="lightgray")
 
 def musicPage():
-    instrument1_col,instrument2_col,instrument3_col = st.columns((2,2,1))
+    instrument1_col,instrument2_col,instrument3_col = st.columns(3)
     with instrument1_col:
         drum_image = Image.open('icons/drum.png')
         st.image(drum_image,width=200)
-        st.checkbox("Drum Sound",value=True,key="drum_check")
+        st.slider("Drum Sound",0,5,1,1,key="drum_value",label_visibility="collapsed")
     with instrument2_col:
         violin_image = Image.open('icons/violin.png')
         st.image(violin_image,width=200)
-        st.checkbox("Violin Sound",value=True,key="violin_check")
+        st.slider("Violin Sound",0,5,1,1,key="violin_value",label_visibility="collapsed")
     with instrument3_col:
         piano_image = Image.open('icons/piano.png')
         st.image(piano_image,width=200)
-        st.checkbox("Piano Sound",value=True,key="piano_check")
+        st.slider("Piano Sound",0,5,1,1,key="piano_value",label_visibility="collapsed")
 
-# A , S , J , B , L #
 def vowelsPage():
     letters = ["A","B","T","K"]
-    letters_columns = st.columns((2,2,2,1))
+    letters_columns = st.columns(4)
     for column in letters_columns:
         i = letters_columns.index(column)
         with column:
-            st.checkbox(label=f"letter {letters[i]}",value=True,key=f"letter{letters[i]}")
+            st.slider(f"letter {letters[i]}",0,5,1,1,key=f"letter{letters[i]}_value")
 
 def voiceChangerPage():
     female_col,selectbox_col,male_col = st.columns((1,2,1))
@@ -164,13 +150,13 @@ def voiceChangerPage():
         st.image(male_image,width=200)
 
 def medicalPage():
-    columns = st.columns((2,2,1))
+    columns = st.columns(3)
     for column in columns:
         i = columns.index(column)+1
         with column:
-            st.radio(f"Arrhythmia{i}",options=["Arrhythmia","Normal"],key=f"Arrhythmia{i}")
+            st.slider(f"Arrhythmia{i}",0,5,1,1,key=f"Arrhythmia{i}_value")
 
-def otherplot():
+def dynamicPlot():
     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()
     df = pd.DataFrame({"amplitude":signal_y_axis,"time":signal_x_axis})
     if len(df) != 0:
@@ -182,18 +168,17 @@ def otherplot():
         time_list.append(df_r["time"])
         amplitude_list.append(df_r["amplitude"])
         Frame_1.append(go.Frame(data=[go.Scatter(x=time_list,y=amplitude_list,mode="lines")])) #1
-    fig1 = go.Figure(
+    fig = go.Figure(
         data=[go.Scatter(x=[0, 0], y=[0, 0])],
         layout=go.Layout(
             xaxis=dict(range=[0, df["time"].max()], autorange=False),
             yaxis=dict(range=[df["amplitude"].min()*1.5, df["amplitude"].max()*1.5], autorange=False),
-            margin= dict(l=0, r=0, t=0, b=0),    
-
+            margin= dict(l=0, r=0, t=0, b=0)
     ),
         frames=Frame_1
     ) #2
 
-    fig1["layout"]["updatemenus"] = [
+    fig["layout"]["updatemenus"] = [
         {
             "buttons": [
                 {
@@ -211,7 +196,7 @@ def otherplot():
                 }
             ],
             "direction": "left",
-            "pad": {"r": 10, "t": 87},
+            "pad": {"t": 50},
             "showactive": False,
             "type": "buttons",
             "x": 0.1,
@@ -221,30 +206,30 @@ def otherplot():
         }
     ]
 
-    sliders_dict = {
-        "active": 0,
-        "yanchor": "top",
-        "xanchor": "left",
-        "currentvalue": {
-            "font": {"size": 20},
-            "prefix": "Time:",
-            "visible": True,
-            "xanchor": "right"
-        },
-        "transition": {"duration": 0},
-        "pad": {"b": 10, "t": 50},
-        "len": 0.9,
-        "x": 0.1,
-        "y": 0,
-        "steps": []
-    }
-    slider_step = {"args": [
-        {"frame": {"duration": 300, "redraw": False},
-         "mode": "immediate",
-         "transition": {"duration": 300}}
-    ],
-        "method": "animate"}
-    sliders_dict["steps"].append(slider_step)
-    fig1["layout"]["sliders"] = [sliders_dict]
+    # sliders_dict = {
+    #     "active": 0,
+    #     "yanchor": "top",
+    #     "xanchor": "left",
+    #     "currentvalue": {
+    #         "font": {"size": 20},
+    #         "prefix": "Time:",
+    #         "visible": True,
+    #         "xanchor": "right"
+    #     },
+    #     "transition": {"duration": 0},
+    #     "pad": {"b": 10, "t": 50},
+    #     "len": 0.9,
+    #     "x": 0.1,
+    #     "y": 0,
+    #     "steps": []
+    # }
+    # slider_step = {"args": [
+    #     {"frame": {"duration": 300, "redraw": False},
+    #      "mode": "immediate",
+    #      "transition": {"duration": 300}}
+    # ],
+    #     "method": "animate"}
+    # sliders_dict["steps"].append(slider_step)
+    # fig1["layout"]["sliders"] = [sliders_dict]
 
-    st.plotly_chart(fig1)
+    st.plotly_chart(fig)
