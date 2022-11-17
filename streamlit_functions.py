@@ -90,9 +90,9 @@ def equalizerModes(duration,yf,xf):
         yf[int(duration*10000):int(duration* 20000)] *= st.session_state["letterK_value"]
 
     if st.session_state["current_page"] == "Medical":
-        yf[int(duration*60):int(duration*90)] *= st.session_state["Arrhythmia1"]
-        yf[int(duration*90):int(duration*250)] *=st.session_state["Arrhythmia2"]
-        yf[int(duration*250):int(duration*300)] *= st.session_state["Arrhythmia3"]
+        yf[int(duration*60):int(duration*90)] *= st.session_state["Arrhythmia1_value"]
+        yf[int(duration*90):int(duration*250)] *=st.session_state["Arrhythmia2_value"]
+        yf[int(duration*250):int(duration*300)] *= st.session_state["Arrhythmia3_value"]
 
 def defaultPage():
     columns = st.columns(10)
@@ -156,7 +156,7 @@ def medicalPage():
         with column:
             st.slider(f"Arrhythmia{i}",0,5,1,1,key=f"Arrhythmia{i}_value")
 
-def dynamicPlot():
+def AnimatedPlot():
     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()
     df = pd.DataFrame({"amplitude":signal_y_axis,"time":signal_x_axis})
     if len(df) != 0:
@@ -167,7 +167,7 @@ def dynamicPlot():
     for ind,df_r in df.iterrows():
         time_list.append(df_r["time"])
         amplitude_list.append(df_r["amplitude"])
-        Frame_1.append(go.Frame(data=[go.Scatter(x=time_list,y=amplitude_list,mode="lines")])) #1
+        Frame_1.append(go.Frame(data=[go.Scatter(x=time_list,y=amplitude_list,mode="lines")]))
     fig = go.Figure(
         data=[go.Scatter(x=[0, 0], y=[0, 0])],
         layout=go.Layout(
@@ -176,7 +176,7 @@ def dynamicPlot():
             margin= dict(l=0, r=0, t=0, b=0)
     ),
         frames=Frame_1
-    ) #2
+    )
 
     fig["layout"]["updatemenus"] = [
         {

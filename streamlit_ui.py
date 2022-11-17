@@ -16,6 +16,8 @@ if "current_page" not in st.session_state:
     st.session_state["current_page"] = "Default"
 if "gender" not in st.session_state:
     st.session_state["gender"] = "Female"
+if "plot_mode" not in st.session_state:
+    st.session_state["plot_mode"] = "Static"
 
 # ---------------------- Uploading Files --------------------------------- #
 
@@ -38,15 +40,18 @@ elif st.session_state["current_page"] == "Medical":
 # Line Break
 st.markdown("***")
 
-# Signal Plot and spectrogram
-signal_figure,spec_figure = functions.plotSignals()
-signal_plot_col, spectrogram_col = st.columns(2,gap="large")
-with signal_plot_col:
-    st.plotly_chart(signal_figure,use_container_width=True)
+if st.session_state["plot_mode"] == "Static":
+    # Signal Plot and spectrogram
+    signal_figure,spec_figure = functions.plotSignals()
+    signal_plot_col, spectrogram_col = st.columns(2,gap="large")
+    with signal_plot_col:
+        st.plotly_chart(signal_figure,use_container_width=True)
 
-with spectrogram_col:
-    st.plotly_chart(spec_figure,use_container_width=True)
-
+    with spectrogram_col:
+        st.plotly_chart(spec_figure,use_container_width=True)
+else:
+    if st.session_state["uploaded_file"]:
+        functions.AnimatedPlot()
 # ---------------------- Sidebar Elements --------------------------------- #
 
 # Original Audio
@@ -57,9 +62,14 @@ st.sidebar.audio(st.session_state["uploaded_file"] if st.session_state["uploaded
 st.sidebar.markdown("# Modified Signal")
 st.sidebar.audio("Modified.wav" if st.session_state["uploaded_file"] else None,"wav")
 
-# Page Selection
-st.sidebar.markdown("# Pages")
-current_page = st.sidebar.radio("pages",["Default","Music","Vowels","VoiceChanger","Medical"],key="current_page",label_visibility="collapsed")
+plot_mode_col, current_page_col = st.sidebar.columns(2)
 
-# if st.session_state["uploaded_file"]:
-#     functions.dynamicPlot()
+with plot_mode_col:
+    # Dynamic vs. Static
+    st.markdown("# Plot Mode")
+    current_page = st.radio("",key="plot_mode",options=["Static", "Animated"],label_visibility="collapsed")
+
+with current_page_col:
+    # Page Selection
+    st.markdown("# Pages")
+    current_page = st.radio("pages",["Default","Music","Vowels","VoiceChanger","Medical"],key="current_page",label_visibility="collapsed")
