@@ -23,14 +23,13 @@ def signalTransform():
         signal_x_axis = np.arange(0,duration,1/sample_rate)
         signal_y_axis = np.frombuffer(signal_wave, dtype=np.int16)
 
-        yf = fft.rfft(signal_y_axis)    
+        yf = fft.rfft(signal_y_axis)
         xf = fft.rfftfreq(n_samples,1/sample_rate)
-
         equalizerModes(duration,yf,xf)
 
         modified_signal = fft.irfft(yf)
         
-        male_modified_signal = librosa.effects.pitch_shift(modified_signal, sample_rate, n_steps= -5)
+        male_modified_signal = librosa.effects.pitch_shift(modified_signal, sr = 44100, n_steps= -5)
     
         modified_signal_channel = np.int16(male_modified_signal if (st.session_state["gender"] == "Male" and st.session_state["current_page"] == "VoiceChanger") else modified_signal)
 
@@ -79,20 +78,19 @@ def equalizerModes(duration,yf,xf):
                 yf[int(duration*ranges[-1]):int(duration* xf.max())] *= st.session_state.get(f"slider10")
 
     if st.session_state["current_page"] == "Music":
-        yf[int(duration*0):int(duration* 1000)] *= st.session_state["drum_value"]
-        yf[int(duration*1000):int(duration* 5000)] *= st.session_state["piano_value"]
-        yf[int(duration*5000):int(duration* 10000)] *= st.session_state["violin_value"]
+        instruments = {"drum_value":[0,1000],"piano_value":[1000,5000],"violin_value":[5000,10000]}
+        for instrument in instruments:
+            yf[int(duration*instruments[instrument][0]):int(duration* instruments[instrument][1])] *= st.session_state[f"{instrument}"]
 
     if st.session_state["current_page"] == "Vowels":
-        yf[int(duration*0):int(duration* 1000)] *= st.session_state["letterA_value"]
-        yf[int(duration*1000):int(duration* 5000)] *= st.session_state["letterB_value"]
-        yf[int(duration*5000):int(duration* 10000)] *= st.session_state["letterT_value"]
-        yf[int(duration*10000):int(duration* 20000)] *= st.session_state["letterK_value"]
-
+        letters = {"letterA_value":[0,1000],"letterB_value":[1000,5000],"letterT_value":[5000,10000],"letterK_value":[10000,20000]}
+        for letter in letters:
+            yf[int(duration*letters[letter][0]):int(duration* letters[letter][1])] *= st.session_state[letter]
+            
     if st.session_state["current_page"] == "Medical":
-        yf[int(duration*60):int(duration*90)] *= st.session_state["Arrhythmia1_value"]
-        yf[int(duration*90):int(duration*250)] *=st.session_state["Arrhythmia2_value"]
-        yf[int(duration*250):int(duration*300)] *= st.session_state["Arrhythmia3_value"]
+        arrhythmias = {"Arrhythmia1_value":[60,90],"Arrhythmia2_value":[90,250],"Arrhythmia3_value":[250,300]}
+        for arrhythmia in arrhythmias:
+            yf[int(duration*arrhythmias[arrhythmia][0]):int(duration* arrhythmias[arrhythmia][1])] *= st.session_state[f"{arrhythmia}"]
 
 def defaultPage():
     columns = st.columns(10)
@@ -115,15 +113,15 @@ def musicPage():
     instrument1_col,instrument2_col,instrument3_col = st.columns(3)
     with instrument1_col:
         drum_image = Image.open('icons/drum.png')
-        st.image(drum_image,width=200)
+        st.image(drum_image,width=150)
         st.slider("Drum Sound",0,5,1,1,key="drum_value",label_visibility="collapsed")
     with instrument2_col:
         violin_image = Image.open('icons/violin.png')
-        st.image(violin_image,width=200)
+        st.image(violin_image,width=150)
         st.slider("Violin Sound",0,5,1,1,key="violin_value",label_visibility="collapsed")
     with instrument3_col:
         piano_image = Image.open('icons/piano.png')
-        st.image(piano_image,width=200)
+        st.image(piano_image,width=150)
         st.slider("Piano Sound",0,5,1,1,key="piano_value",label_visibility="collapsed")
 
 def vowelsPage():
@@ -138,16 +136,16 @@ def voiceChangerPage():
     female_col,selectbox_col,male_col = st.columns((1,2,1))
     with female_col:
         female_image = Image.open('icons/female.png')
-        st.image(female_image,width=200)
+        st.image(female_image,width=150)
    
     with selectbox_col:
         for _ in range(4):
-            st.markdown("")
+            st.markdown("",unsafe_allow_html=True)
         st.select_slider("Change Voice to:",options=["Female","Male"],key="gender",label_visibility="collapsed")
 
     with male_col:
         male_image = Image.open('icons/male.png')
-        st.image(male_image,width=200)
+        st.image(male_image,width=150)
 
 def medicalPage():
     columns = st.columns(3)

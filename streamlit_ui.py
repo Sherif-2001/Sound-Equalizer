@@ -26,16 +26,15 @@ uploaded_file = st.sidebar.file_uploader("uploader",key="uploaded_file",label_vi
 # ---------------------- Main Window Elements ---------------------------- #
 
 # Current Page
-if st.session_state["current_page"] == "Default":
-    functions.defaultPage()
-elif st.session_state["current_page"] == "Music":
-    functions.musicPage()
-elif st.session_state["current_page"] == "Vowels":
-    functions.vowelsPage()
-elif st.session_state["current_page"] == "VoiceChanger":
-    functions.voiceChangerPage()
-elif st.session_state["current_page"] == "Medical":
-    functions.medicalPage()
+pages = {"Default":functions.defaultPage,
+        "Music":functions.musicPage,
+        "Vowels":functions.vowelsPage,
+        "VoiceChanger":functions.voiceChangerPage,
+        "Medical":functions.medicalPage
+        }
+for page in pages:
+    if st.session_state["current_page"] == page:
+        pages[page]()
 
 # Line Break
 st.markdown("***")
@@ -67,7 +66,7 @@ plot_mode_col, current_page_col = st.sidebar.columns(2)
 with plot_mode_col:
     # Dynamic vs. Static
     st.markdown("# Plot Mode")
-    current_page = st.radio("",key="plot_mode",options=["Static", "Animated"],label_visibility="collapsed")
+    current_page = st.radio("plot mode",key="plot_mode",options=["Static", "Animated"],label_visibility="collapsed")
 
 with current_page_col:
     # Page Selection
