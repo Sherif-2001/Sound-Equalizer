@@ -41,6 +41,9 @@ You can open music song and change the sound of instruments using sliders
 <p align="center">
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/music.jpg">
 </p>
+<p align="center">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/music%20(2).jpg">
+</p>
 
 ### Vowels mode:
 You can open any sound and change the letters or hide them from the sound without the sound disappearing 
