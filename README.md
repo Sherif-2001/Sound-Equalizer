@@ -34,9 +34,7 @@ You can open signal and change magnitude of frequency components using 10 slider
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/dynamic_def.jpg">
 </p>
 
-
-
-### Musical instruments mode:
+### Musical_instruments_mode:
 You can open music song and change the sound of instruments using sliders 
 <p align="center">
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/music.jpg">
@@ -45,7 +43,7 @@ You can open music song and change the sound of instruments using sliders
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/music%20(2).jpg">
 </p>
 
-### Vowels mode:
+### Vowels_mode:
 You can open any sound and change the letters or hide them from the sound without the sound disappearing 
 <p align="center">
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/vowels.jpg">
@@ -54,14 +52,14 @@ You can open any sound and change the letters or hide them from the sound withou
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/vowels%20(2).jpg">
 </p>
 
-### Biological signal abnormalities:
+### Biological_signal_abnormalities:
 You can delete an arrhythmia from signal or any abnormalities
 
 <p align="center">
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/medical.jpg">
 </p>
 
-### Voice changer:
+### Voice_changer:
 You can change the voice of male to female and vice versa 
 
 
