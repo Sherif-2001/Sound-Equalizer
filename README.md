@@ -69,7 +69,7 @@ You can change the voice of male to female and vice versa
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/female.jpg">
 </p>
 <p align="center">
-    <img src="">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/voice_changer.jpg">
 </p>
 
 
