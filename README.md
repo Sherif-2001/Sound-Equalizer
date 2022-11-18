@@ -30,6 +30,9 @@ You can open signal and change magnitude of frequency components using 10 slider
 <p align="center">
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/default%20(2).jpg">
 </p>
+<p align="center">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/dynamic_def.jpg">
+</p>
 
 
 
