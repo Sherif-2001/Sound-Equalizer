@@ -28,7 +28,7 @@ this equalizer is about signal changer magnitude of some frequency components by
 You can open signal and change magnitude of frequency components using 10 sliders which have the same range of frequency
 
 <p align="center">
-    <img src="photo here">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/default%20(2).jpg">
 </p>
 
 
