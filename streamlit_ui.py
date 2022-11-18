@@ -50,7 +50,7 @@ if st.session_state["plot_mode"] == "Static":
         st.plotly_chart(spec_figure,use_container_width=True)
 else:
     if st.session_state["uploaded_file"]:
-        functions.AnimatedPlot()
+        functions.dynamicPlot()
 # ---------------------- Sidebar Elements --------------------------------- #
 
 # Original Audio

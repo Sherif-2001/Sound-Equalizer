@@ -10,6 +10,9 @@ import plotly.graph_objs as go
 import streamlit_vertical_slider as svs
 from PIL import Image
 import librosa
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import streamlit.components.v1 as components
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
@@ -154,80 +157,83 @@ def medicalPage():
         with column:
             st.slider(f"Arrhythmia{i}",0,5,1,1,key=f"Arrhythmia{i}_value")
 
-def AnimatedPlot():
+def dynamicPlot():
     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()
-    df = pd.DataFrame({"amplitude":signal_y_axis,"time":signal_x_axis})
-    if len(df) != 0:
-        df = df[::(len(df)//1000)]
-    Frame_1 = []
-    time_list=[0]
-    amplitude_list=[df["amplitude"][0]]
-    for ind,df_r in df.iterrows():
-        time_list.append(df_r["time"])
-        amplitude_list.append(df_r["amplitude"])
-        Frame_1.append(go.Frame(data=[go.Scatter(x=time_list,y=amplitude_list,mode="lines")]))
-    fig = go.Figure(
-        data=[go.Scatter(x=[0, 0], y=[0, 0])],
-        layout=go.Layout(
-            xaxis=dict(range=[0, df["time"].max()], autorange=False),
-            yaxis=dict(range=[df["amplitude"].min()*1.5, df["amplitude"].max()*1.5], autorange=False),
-            margin= dict(l=0, r=0, t=0, b=0)
-    ),
-        frames=Frame_1
-    )
+    
+    plt.style.use('dark_background')
 
-    fig["layout"]["updatemenus"] = [
-        {
-            "buttons": [
-                {
-                    "args": [None, {"frame": {"duration": 1, "redraw": False},
-                                    "fromcurrent": True, "transition": {"duration": 0}}],
-                    "label": "Play",
-                    "method": "animate"
-                },
-                {
-                    "args": [[None], {"frame": {"duration": 0, "redraw": False},
-                                    "mode": "immediate",
-                                    "transition": {"duration": 0}}],
-                    "label": "Pause",
-                    "method": "animate"
-                }
-            ],
-            "direction": "left",
-            "pad": {"t": 50},
-            "showactive": False,
-            "type": "buttons",
-            "x": 0.1,
-            "xanchor": "right",
-            "y": 0,
-            "yanchor": "top"
-        }
-    ]
+    under_x = signal_x_axis[::len(signal_x_axis)//400]
+    under_y = signal_y_axis[::len(signal_y_axis)//400]
 
-    # sliders_dict = {
-    #     "active": 0,
-    #     "yanchor": "top",
-    #     "xanchor": "left",
-    #     "currentvalue": {
-    #         "font": {"size": 20},
-    #         "prefix": "Time:",
-    #         "visible": True,
-    #         "xanchor": "right"
-    #     },
-    #     "transition": {"duration": 0},
-    #     "pad": {"b": 10, "t": 50},
-    #     "len": 0.9,
-    #     "x": 0.1,
-    #     "y": 0,
-    #     "steps": []
-    # }
-    # slider_step = {"args": [
-    #     {"frame": {"duration": 300, "redraw": False},
-    #      "mode": "immediate",
-    #      "transition": {"duration": 300}}
-    # ],
-    #     "method": "animate"}
-    # sliders_dict["steps"].append(slider_step)
-    # fig1["layout"]["sliders"] = [sliders_dict]
+    fig, ax1 = plt.subplots()
+    line, = ax1.plot([], [])
+    plt.ylim(under_y.min()*1.5,under_y.max()*1.5)
+    
+    tempx = []
+    tempy = []
 
-    st.plotly_chart(fig)
+    def animate(i):
+        tempx.append(under_x[i])
+        tempy.append(under_y[i])
+        line.set_data(tempx,tempy)
+        if i>50:
+            tempx.pop(0)
+            tempy.pop(0)
+        plt.xlim(tempx[0],tempx[-1])
+        return line,
+
+    ani = animation.FuncAnimation(fig, animate, interval=20, blit=True, frames=len(under_x))
+
+    components.html(ani.to_jshtml(default_mode="once"),height=600,)
+
+# def AnimatedPlot():
+#     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()
+#     df = pd.DataFrame({"amplitude":signal_y_axis,"time":signal_x_axis})
+#     if len(df) != 0:
+#         df = df[::(len(df)//1000)]
+#     Frame_1 = []
+#     time_list=[0]
+#     amplitude_list=[df["amplitude"][0]]
+#     for ind,df_r in df.iterrows():
+#         time_list.append(df_r["time"])
+#         amplitude_list.append(df_r["amplitude"])
+#         Frame_1.append(go.Frame(data=[go.Scatter(x=time_list,y=amplitude_list,mode="lines")]))
+#     fig = go.Figure(
+#         data=[go.Scatter(x=[0, 0], y=[0, 0])],
+#         layout=go.Layout(
+#             xaxis=dict(range=[0, time_list[-1]], autorange=False),
+#             yaxis=dict(range=[df["amplitude"].min()*1.5, df["amplitude"].max()*1.5], autorange=False),
+#             margin= dict(l=0, r=0, t=0, b=0)
+#     ),
+#         frames=Frame_1
+#     )
+
+#     fig["layout"]["updatemenus"] = [
+#         {
+#             "buttons": [
+#                 {
+#                     "args": [None, {"frame": {"duration": 1, "redraw": False},
+#                                     "fromcurrent": True, "transition": {"duration": 0}}],
+#                     "label": "Play",
+#                     "method": "animate"
+#                 },
+#                 {
+#                     "args": [[None], {"frame": {"duration": 0, "redraw": False},
+#                                     "mode": "immediate",
+#                                     "transition": {"duration": 0}}],
+#                     "label": "Pause",
+#                     "method": "animate"
+#                 }
+#             ],
+#             "direction": "left",
+#             "pad": {"t": 50},
+#             "showactive": False,
+#             "type": "buttons",
+#             "x": 0.1,
+#             "xanchor": "right",
+#             "y": 0,
+#             "yanchor": "top"
+#         }
+#     ]
+
+#     st.plotly_chart(fig)
