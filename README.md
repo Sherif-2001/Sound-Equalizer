@@ -51,7 +51,7 @@ You can open any sound and change the letters or hide them from the sound withou
     <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/vowels.jpg">
 </p>
 <p align="center">
-    <img src="">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/vowels%20(2).jpg">
 </p>
 
 ### Biological signal abnormalities:
