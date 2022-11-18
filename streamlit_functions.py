@@ -166,6 +166,8 @@ def dynamicPlot():
     under_y = signal_y_axis[::len(signal_y_axis)//400]
 
     fig, ax1 = plt.subplots()
+    fig.set_figwidth(10)
+    fig.set_figheight(3)
     line, = ax1.plot([], [])
     plt.ylim(under_y.min()*1.5,under_y.max()*1.5)
     
@@ -184,7 +186,7 @@ def dynamicPlot():
 
     ani = animation.FuncAnimation(fig, animate, interval=20, blit=True, frames=len(under_x))
 
-    components.html(ani.to_jshtml(default_mode="once"),height=600,)
+    components.html(ani.to_jshtml(default_mode="once"),height=400,)
 
 # def AnimatedPlot():
 #     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()
