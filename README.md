@@ -1,6 +1,6 @@
 # Equalizer
 <p align="center">
-    <img src="photo here">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/default.jpg">
 </p>
 
 
