@@ -55,7 +55,7 @@ You can open any sound and change the letters or hide them from the sound withou
 You can delete an arrhythmia from signal or any abnormalities
 
 <p align="center">
-    <img src="photo here">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/medical.jpg">
 </p>
 
 ### Voice changer:
