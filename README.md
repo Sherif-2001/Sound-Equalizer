@@ -39,7 +39,7 @@ You can open signal and change magnitude of frequency components using 10 slider
 ### Musical instruments mode:
 You can open music song and change the sound of instruments using sliders 
 <p align="center">
-    <img src="photo here">
+    <img src="https://github.com/Sherif-2001/DSP_Task2_8/blob/main/photos/music.jpg">
 </p>
 
 ### Vowels mode:
