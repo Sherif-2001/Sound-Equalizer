@@ -76,10 +76,15 @@ You can change the voice of male to female and vice versa
 ## File_structure:
 We have only 2 files one is the streamlit_ui(main) file where we run the whole ui and call the required functions 
 the other is the streamlit_fuctions(fuctions) file which devided into 5 sections : 
-1- Uniform range mode 
+
+1- Uniform range mode
+
 2- Musical instruments mode
+
 3- Vowels mode
+
 4- Biological signal abnormalities
+
 5- Voice changer
 
 
