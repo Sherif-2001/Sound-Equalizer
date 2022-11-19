@@ -95,6 +95,12 @@ def equalizerModes(duration,yf,xf):
         for arrhythmia in arrhythmias:
             yf[int(duration*arrhythmias[arrhythmia][0]):int(duration* arrhythmias[arrhythmia][1])] *= st.session_state[f"{arrhythmia}"]
 
+    if st.session_state["current_page"] == "Animals":
+                animalss = {"sparrow_value":[2583,9533],"cat_value":[48,85000],"dog_value":[67,45000]}
+                for animal in animalss:
+                    yf[int(duration*animalss[animal][0]):int(duration* animalss[animal][1])] *= st.session_state[f"{animal}"]
+
+
 def defaultPage():
     columns = st.columns(10)
     for index in range(len(columns)):
@@ -156,6 +162,21 @@ def medicalPage():
         i = columns.index(column)+1
         with column:
             st.slider(f"Arrhythmia{i}",0,5,1,1,key=f"Arrhythmia{i}_value")
+
+def animalsPage():
+    animal1_col,animal2_col,animal3_col = st.columns(3)
+    with animal1_col:
+        sparrow_image = Image.open('icons/sparrow.png')
+        st.image(sparrow_image,width=150)
+        st.slider("Sparrow Sound",0,5,1,1,key="sparrow_value",label_visibility="collapsed")
+    with animal2_col:
+        cat_image = Image.open('icons/cat.png')
+        st.image(cat_image,width=150)
+        st.slider("Cat Sound",0,5,1,1,key="cat_value",label_visibility="collapsed")
+    with animal3_col:
+        dog_image = Image.open('icons/dog.png')
+        st.image(dog_image,width=150)
+        st.slider("Dog Sound",0,5,1,1,key="dog_value",label_visibility="collapsed")
 
 def dynamicPlot():
     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()

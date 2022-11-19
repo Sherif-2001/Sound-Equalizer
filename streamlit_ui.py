@@ -30,7 +30,8 @@ pages = {"Default":functions.defaultPage,
         "Music":functions.musicPage,
         "Vowels":functions.vowelsPage,
         "VoiceChanger":functions.voiceChangerPage,
-        "Medical":functions.medicalPage
+        "Medical":functions.medicalPage,
+        "Animals":functions.animalsPage
         }
 for page in pages:
     if st.session_state["current_page"] == page:
@@ -71,4 +72,4 @@ with plot_mode_col:
 with current_page_col:
     # Page Selection
     st.markdown("# Pages")
-    current_page = st.radio("pages",["Default","Music","Vowels","VoiceChanger","Medical"],key="current_page",label_visibility="collapsed")
+    current_page = st.radio("pages",["Default","Music","Vowels","VoiceChanger","Medical","Animals"],key="current_page",label_visibility="collapsed")
