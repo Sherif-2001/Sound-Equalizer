@@ -16,6 +16,7 @@ import streamlit.components.v1 as components
 
 def signalTransform():
     if st.session_state["uploaded_file"]:
+        global yf,duration
         audio = wave.open(st.session_state["uploaded_file"], 'rb')
         sample_rate = audio.getframerate()
         n_channels = audio.getnchannels()
@@ -70,8 +71,14 @@ def plotSignals():
 
     return signal_figure, spec_figure
 
-def equalizerModes(duration,yf,xf):
 
+def set_ranges(dict):
+
+    for item in dict:
+            yf[int(duration*dict[item][0]):int(duration* dict[item][1])] *= st.session_state[f"{item}"]
+
+def equalizerModes(duration,yf,xf):
+    
     if st.session_state["current_page"] == "Default":
         ranges = np.arange(0,np.abs(xf.max()),np.abs(xf.max())/10)
         for i in range(10):
@@ -82,24 +89,20 @@ def equalizerModes(duration,yf,xf):
 
     if st.session_state["current_page"] == "Music":
         instruments = {"drum_value":[0,1000],"piano_value":[1000,5000],"violin_value":[5000,10000]}
-        for instrument in instruments:
-            yf[int(duration*instruments[instrument][0]):int(duration* instruments[instrument][1])] *= st.session_state[f"{instrument}"]
+        
+        set_ranges(instruments)
 
     if st.session_state["current_page"] == "Vowels":
         letters = {"letterA_value":[0,1000],"letterB_value":[1000,5000],"letterT_value":[5000,10000],"letterK_value":[10000,20000]}
-        for letter in letters:
-            yf[int(duration*letters[letter][0]):int(duration* letters[letter][1])] *= st.session_state[letter]
+       
+        set_ranges(letters)
             
     if st.session_state["current_page"] == "Medical":
         arrhythmias = {"Arrhythmia1_value":[60,90],"Arrhythmia2_value":[90,250],"Arrhythmia3_value":[250,300]}
-        for arrhythmia in arrhythmias:
-            yf[int(duration*arrhythmias[arrhythmia][0]):int(duration* arrhythmias[arrhythmia][1])] *= st.session_state[f"{arrhythmia}"]
+        
+        set_ranges(arrhythmias)
 
-    if st.session_state["current_page"] == "Animals":
-                animalss = {"sparrow_value":[2583,9533],"cat_value":[48,85000],"dog_value":[67,45000]}
-                for animal in animalss:
-                    yf[int(duration*animalss[animal][0]):int(duration* animalss[animal][1])] *= st.session_state[f"{animal}"]
-
+    
 
 def defaultPage():
     columns = st.columns(10)
@@ -118,20 +121,25 @@ def defaultPage():
                                 slider_color="#061724",
                                 track_color="lightgray")
 
+
+def musicSlidersAndIcons(path='',sliderName='',key=''):
+
+    image = Image.open(path)
+    st.image(image,width=150)
+    st.slider(sliderName,0,5,1,1,key=key,label_visibility="collapsed")
+
 def musicPage():
     instrument1_col,instrument2_col,instrument3_col = st.columns(3)
     with instrument1_col:
-        drum_image = Image.open('icons/drum.png')
-        st.image(drum_image,width=150)
-        st.slider("Drum Sound",0,5,1,1,key="drum_value",label_visibility="collapsed")
+       
+        musicSlidersAndIcons('icons/drum.png',"Drum Sound","drum_value")
+
     with instrument2_col:
-        violin_image = Image.open('icons/violin.png')
-        st.image(violin_image,width=150)
-        st.slider("Violin Sound",0,5,1,1,key="violin_value",label_visibility="collapsed")
+       
+        musicSlidersAndIcons('icons/violin.png',"Violin Sound","violin_value")
     with instrument3_col:
-        piano_image = Image.open('icons/piano.png')
-        st.image(piano_image,width=150)
-        st.slider("Piano Sound",0,5,1,1,key="piano_value",label_visibility="collapsed")
+        
+        musicSlidersAndIcons('icons/piano.png',"Piano Sound","piano_value")
 
 def vowelsPage():
     letters = ["A","B","T","K"]
@@ -163,20 +171,6 @@ def medicalPage():
         with column:
             st.slider(f"Arrhythmia{i}",0,5,1,1,key=f"Arrhythmia{i}_value")
 
-def animalsPage():
-    animal1_col,animal2_col,animal3_col = st.columns(3)
-    with animal1_col:
-        sparrow_image = Image.open('icons/sparrow.png')
-        st.image(sparrow_image,width=150)
-        st.slider("Sparrow Sound",0,5,1,1,key="sparrow_value",label_visibility="collapsed")
-    with animal2_col:
-        cat_image = Image.open('icons/cat.png')
-        st.image(cat_image,width=150)
-        st.slider("Cat Sound",0,5,1,1,key="cat_value",label_visibility="collapsed")
-    with animal3_col:
-        dog_image = Image.open('icons/dog.png')
-        st.image(dog_image,width=150)
-        st.slider("Dog Sound",0,5,1,1,key="dog_value",label_visibility="collapsed")
 
 def dynamicPlot():
     signal_x_axis,signal_y_axis,modified_signal,sample_rate,duration = signalTransform()
